@@ -1,68 +1,65 @@
 import socket
 import json
 
+# Server configuration
 PORT = 5000
-SERVER = "192.168.137.1"
+SERVER = "192.168.137.1"  # Server IP address
 ADDRESS = (SERVER, PORT)
-DISCONNECT_MESSAGE = "DISCONNECT"
-MAXIMUM_BYTES = 2048
+DISCONNECT_MESSAGE = "DISCONNECT"  # Message to disconnect client
+MAXIMUM_BYTES = 2048  # Maximum bytes to receive
 
-clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create client socket
 
+# Function to send array to server and receive sorted array
 def sortArrayOnServer(array):
-    json_packed_array = json.dumps(array)
-    clientSocket.send(json_packed_array.encode())
+    json_packed_array = json.dumps(array)  # Pack array into JSON
+    clientSocket.send(json_packed_array.encode())  # Send JSON data to server
 
-    sortedArray = clientSocket.recv(MAXIMUM_BYTES).decode()
+    sortedArray = clientSocket.recv(MAXIMUM_BYTES).decode()  # Receive sorted array from server
     
     print(f"Sorted array is: {sortedArray}")
 
+# Function to connect to server and interact with it
 def connectToServer():
-    clientSocket.connect(ADDRESS)
+    clientSocket.connect(ADDRESS)  # Connect to server
 
     query = ""
     serverIntroduction()
 
-    while(True):
-        query = input("<> ")
-        query = query.strip().lower()
+    while True:
+        query = input("<> ")  # Prompt user for input
+        query = query.strip().lower()  # Convert input to lowercase and remove leading/trailing spaces
         
-        if(query == "disconnect"):
-            sortArrayOnServer(DISCONNECT_MESSAGE)
-            print("Your connection to the server has sucessfully been closed!")
-            return
+        if query == "disconnect":
+            sortArrayOnServer(DISCONNECT_MESSAGE)  # Send disconnect message to server
+            print("Your connection to the server has successfully been closed!")
+            return  # Exit the function and close the connection
 
-        elif(query == "array"):
-            array = readArrayFromInput()
-            sortArrayOnServer(array)
+        elif query == "array":
+            array = readArrayFromInput()  # Read array from user input
+            sortArrayOnServer(array)  # Send array to server for sorting
 
         else:
-            print("Invalid command, try again!")
-            continue
+            print("Invalid command, try again!")  # Notify user of invalid command
+            continue  # Continue loop for new input
 
-        print("Your query has been sucessfully processed! Make a new query!")
+        print("Your query has been successfully processed! Make a new query!")
 
-
+# Function to read array input from user
 def readArrayFromInput():
-    # Ask the user to input the array elements
-    input_string = input("Enter the array elements separated by space: ")
+    input_string = input("Enter the array elements separated by space: ")  # Prompt user for array input
 
-    # Split the input string by space to get individual elements
-    array = input_string.split()
-
-    # Convert elements to the desired data type if needed
+    array = input_string.split()  # Split input string by space to get individual elements
     array = [int(x) for x in array]  # Convert elements to integers
 
     return array
 
-
+# Function to display server introduction message
 def serverIntroduction():
     print("You are connected to the server!")
     print("Type \"Disconnect\" to disconnect from the server!")
-    print("Type \"Array\" so you can send an array to be sorted to the server!")
+    print("Type \"Array\" to send an array to be sorted to the server!")
 
 
+# Call function to connect to server and start interaction
 connectToServer()
-
-
-

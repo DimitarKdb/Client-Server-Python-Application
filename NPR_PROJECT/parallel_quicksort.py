@@ -12,22 +12,22 @@ def parallelQuicksort(arr, queue):
     right = [x for x in arr if x > pivot]
 
     # Create thread objects for sorting left and right sub-arrays
-    left_queue = Queue()
-    left_thread = threading.Thread(target=lambda: parallelQuicksort(left, left_queue))
+    leftQueue = Queue()
+    leftThread = threading.Thread(target=lambda: parallelQuicksort(left, leftQueue))
     
-    right_queue = Queue()
-    right_thread = threading.Thread(target=lambda: parallelQuicksort(right, right_queue))
+    rightQueue = Queue()
+    rightThread = threading.Thread(target=lambda: parallelQuicksort(right, rightQueue))
 
     # Start the threads
-    left_thread.start()
-    right_thread.start()
+    leftThread.start()
+    rightThread.start()
 
     # Wait for threads to finish and collect the sorted sub-arrays
-    left_thread.join()
-    right_thread.join()
+    leftThread.join()
+    rightThread.join()
 
     # Retrieve the sorted sub-arrays from threads
-    left_sorted = left_queue.get()
-    right_sorted = right_queue.get()
+    leftSortedArray = leftQueue.get()
+    rightSortedArray = rightQueue.get()
     
-    queue.put(left_sorted + middle + right_sorted)
+    queue.put(leftSortedArray + middle + rightSortedArray)

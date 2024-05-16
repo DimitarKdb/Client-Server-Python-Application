@@ -5,60 +5,59 @@ import parallel_quicksort as pq
 from queue import Queue
 from datetime import datetime
 
+# Server configuration
 PORT = 5000
-#SERVER = "192.168.0.107"
-#automatically does the upper thing for us
-SERVER = socket.gethostbyname(socket.gethostname())
+SERVER = socket.gethostbyname(socket.gethostname())  # Get local server IP address
 ADDRESS = (SERVER, PORT)
-DISCONNECT_MESSAGE = "DISCONNECT"
-MAXIMUM_BYTES = 2048
+DISCONNECT_MESSAGE = "DISCONNECT"  # Message to disconnect client
+MAXIMUM_BYTES = 2048  # Maximum bytes to receive
 
+# Create server socket
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(ADDRESS)
+server.bind(ADDRESS)  # Bind server to address
 
-def respondToClient(connection, address) : 
-    print(f"[{getCurrTime()}][CONECTION] A new client with (address, port): {address} has connected.")
+# Function to respond to client requests
+def respondToClient(connection, address):
+    print(f"[{getCurrTime()}][CONNECTION] A new client with (address, port): {address} has connected.")
 
     isConnected = True
     while isConnected:
-        recievedArray = connection.recv(MAXIMUM_BYTES).decode() #this line is blocking the program, so it needs a new thread
-        if recievedArray:
-            unpackedArray = json.loads(recievedArray)
+        receivedArray = connection.recv(MAXIMUM_BYTES).decode()  # Receive data from client
+        if receivedArray:
+            unpackedArray = json.loads(receivedArray)  # Unpack JSON data from client
 
-            if(unpackedArray == DISCONNECT_MESSAGE):
+            if unpackedArray == DISCONNECT_MESSAGE:
                 isConnected = False
-                break
+                break  # Break loop if client wants to disconnect
 
             resultQueue = Queue()
-            pq.parallelQuicksort(unpackedArray, resultQueue)
+            pq.parallelQuicksort(unpackedArray, resultQueue)  # Perform parallel quicksort
 
             sortedArray = resultQueue.get()
-            packedSortedArray = json.dumps(sortedArray)
+            packedSortedArray = json.dumps(sortedArray)  # Pack sorted array into JSON
 
-            connection.send(packedSortedArray.encode())
-            print(f"[{getCurrTime()}][SUCESSFULL] Sucessfully processed the query of client: {address}")
-        
+            connection.send(packedSortedArray.encode())  # Send sorted array back to client
+            print(f"[{getCurrTime()}][SUCCESSFUL] Successfully processed the query of client: {address}")
 
-    print(f"[{getCurrTime()}][DISCONNECTED] Client: {address} has disconected!")
+    print(f"[{getCurrTime()}][DISCONNECTED] Client: {address} has disconnected!")
 
-    connection.close()
+    connection.close()  # Close connection with client
 
     print(f"Active connections at the moment: {threading.active_count() - 2}")
 
-
+# Start server
 def start():
-    server.listen()
+    print(f"[{getCurrTime()}][STARTING] SERVER is setting up...")
+    server.listen()  # Start listening for incoming connections
     print(f"[{getCurrTime()}][LISTENING] Server is listening on: {SERVER}")
     while True:
-        connection, address = server.accept() #this line is blocking the program, so it needs a new thread
-        thread = threading.Thread(target = respondToClient, args=(connection, address))
-        thread.start()
+        connection, address = server.accept()  # Accept new client connection
+        thread = threading.Thread(target=respondToClient, args=(connection, address))  # Create new thread for client
+        thread.start()  # Start thread to handle client request
         print(f"Active connections at the moment: {threading.active_count() - 1}")
 
-
-
+# Function to get current time
 def getCurrTime():
     return datetime.now().strftime("%H:%M:%S")
 
-print(f"[{getCurrTime()}][STARTING] SERVER is setting up...")
 start()
