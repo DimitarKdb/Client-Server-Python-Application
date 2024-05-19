@@ -37,6 +37,10 @@ def connectToServer():
 
         elif query == "array":
             array = readArrayFromInput()  # Read array from user input
+
+            if(array == -1):
+                continue
+
             sortArrayOnServer(array)  # Send array to server for sorting
 
         else:
@@ -47,12 +51,19 @@ def connectToServer():
 
 # Function to read array input from user
 def readArrayFromInput():
+
     input_string = input("Enter the array elements separated by space: ")  # Prompt user for array input
 
     array = input_string.split()  # Split input string by space to get individual elements
-    array = [int(x) for x in array]  # Convert elements to integers
+ 
+    try:
+        array = [int(x) for x in array]  # Convert elements to integers
+    except:
+        print("Array input was invalid, please try another query!")
+        return -1
 
     return array
+
 
 # Function to display server introduction message
 def serverIntroduction():

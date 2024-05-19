@@ -83,6 +83,7 @@ parallelQuicksort (arr, queue)
 - The function recursively sorts the input array “arr” in parallel using threads.
 - It partitions the array into three parts: elements less than the pivot, elements equal to the pivot, and elements greater than the pivot.
 - Threads are created to sort the left and right sub-arrays.
+- If the array's length is less or equal to the threshold parameter, we use the normal quicksort algorithm for optimization purposes.
 - The sorted sub-arrays are put into their respective queues.
   Example Usage:
 - Live test

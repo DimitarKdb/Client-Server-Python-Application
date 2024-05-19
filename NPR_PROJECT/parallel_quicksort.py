@@ -1,11 +1,19 @@
 import threading
 from queue import Queue
 
+#A threshold on the size of the array, when the normal quicksort is used
+THRESHOLD = 5
+
 def parallelQuicksort(arr, queue):
     if len(arr) <= 1:
         queue.put(arr)
         return
     
+    #if the length of the array is less than the threshold we use original quicksort - (optimization reasons)
+    if len(arr) <= THRESHOLD:
+        queue.put(quicksort(arr))
+        return
+
     pivot = arr[len(arr) // 2]
     left = [x for x in arr if x < pivot]
     middle = [x for x in arr if x == pivot]
@@ -31,3 +39,13 @@ def parallelQuicksort(arr, queue):
     rightSortedArray = rightQueue.get()
     
     queue.put(leftSortedArray + middle + rightSortedArray)
+
+
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
