@@ -1,8 +1,5 @@
 # Client-Server-Python-Application
 
-CLIENT-SERVER Application
-Implemented for the Network programming course in FMI, lectured during the summer semester.
-
 SERVER:
 I.Purpose
 The server file (server.py) is designed to implement a server that listens for client connections, receives arrays from clients, sorts them using parallel quicksort, and returns the sorted arrays to the clients.
